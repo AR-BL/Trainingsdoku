@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Trainingsdoku – BL Erfurt</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { background: #f7f9fc; color: #1a1a2e; }
+body {
+  background: #f7f9fc !important;
+  color: #1a1a2e !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  font-size: 15px;
+  -webkit-text-size-adjust: 100%;
+}
+.hdr { background: #1a1a2e; color: white; padding: 14px 16px 0; }
+.hdr h1 { font-size: 14px; font-weight: 700; letter-spacing: 0.05em; color: white; }
+.hdr .sub { font-size: 11px; color: rgba(255,255,255,0.65); margin-top: 3px; }
+.tabs-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; margin-top: 10px; }
+.tabs-wrap::-webkit-scrollbar { display: none; }
+.tabs { display: flex; white-space: nowrap; }
+.tab {
+  display: inline-block; padding: 9px 13px; font-size: 12px; font-weight: 600;
+  color: rgba(255,255,255,0.55); border: none; background: none; cursor: pointer;
+  border-bottom: 3px solid transparent; white-space: nowrap; -webkit-appearance: none;
+}
+.tab.on { color: white; border-bottom-color: #e94560; }
+.wnav { background: #1a1a2e; padding: 10px 16px 12px; display: flex; align-items: center; gap: 8px; }
+.wnav .wlbl { flex: 1; text-align: center; color: white; font-size: 13px; font-weight: 600; }
+.wnav .arr {
+  background: rgba(255,255,255,0.18); color: white; border: none;
+  border-radius: 7px; width: 36px; height: 36px; font-size: 20px;
+  cursor: pointer; -webkit-appearance: none;
+}
+.days {
+  background: white; border-bottom: 1px solid #dde3ea;
+  padding: 10px 16px; display: flex; gap: 7px;
+  overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+}
+.days::-webkit-scrollbar { display: none; }
+.dpill {
+  flex-shrink: 0; width: 44px; height: 44px; border-radius: 50%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  border: 2px solid #dde3ea; background: white; cursor: pointer; gap: 1px;
+  -webkit-appearance: none;
+}
+.dpill .dn { font-size: 9px; font-weight: 700; color: #6b7a8d; text-transform: uppercase; }
+.dpill .dd { font-size: 14px; font-weight: 700; color: #1a1a2e; }
+.dpill.on { background: #e94560; border-color: #e94560; }
+.dpill.on .dn, .dpill.on .dd { color: white; }
+.dpill.saved { background: #2c5f2e; border-color: #2c5f2e; }
+.dpill.saved .dn, .dpill.saved .dd { color: white; }
+.note { margin: 10px 16px 0; background: #fff8e1; border-left: 3px solid #f0a500; border-radius: 6px; padding: 8px 12px; font-size: 12px; color: #7b5500; font-weight: 500; }
+.dlabel { padding: 10px 16px 2px; font-size: 13px; font-weight: 700; color: #6b7a8d; }
+.sec { margin: 10px 16px 0; border-radius: 10px; overflow: hidden; border: 1px solid #dde3ea; }
+.sec-hdr {
+  padding: 11px 14px; color: white; font-size: 11px; font-weight: 700;
+  letter-spacing: 0.07em; text-transform: uppercase;
+  display: flex; justify-content: space-between; align-items: center;
+  cursor: pointer; border: none; width: 100%; text-align: left; -webkit-appearance: none;
+}
+.sec-hdr .tog { font-size: 14px; opacity: 0.75; transition: transform 0.2s; }
+.sec.closed .tog { transform: rotate(-90deg); }
+.sec-body { background: white; }
+.sec.closed .sec-body { display: none; }
+.fld { padding: 11px 14px; border-bottom: 1px solid #dde3ea; background: white; }
+.fld:last-child { border-bottom: none; }
+.fld label {
+  display: block; font-size: 11px; font-weight: 700; color: #6b7a8d;
+  text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;
+}
+.fld input[type=text],
+.fld input[type=number],
+.fld textarea {
+  width: 100%; background: #f0f4f8; border: 1.5px solid #dde3ea;
+  border-radius: 8px; padding: 10px 12px; font-size: 15px; color: #1a1a2e;
+  -webkit-appearance: none; outline: none; font-family: inherit; display: block;
+}
+.fld input[type=number] { width: 110px; }
+.fld textarea { resize: none; height: 64px; }
+.num-row { display: flex; align-items: center; gap: 10px; }
+.num-unit { font-size: 13px; color: #6b7a8d; }
+.scale { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+.sbtn {
+  width: 40px; height: 40px; border-radius: 8px; border: 1.5px solid #dde3ea;
+  background: #f0f4f8; font-size: 15px; font-weight: 700; color: #6b7a8d;
+  cursor: pointer; -webkit-appearance: none; display: flex; align-items: center; justify-content: center;
+}
+.sbtn.on { background: #e94560; border-color: #e94560; color: white; }
+.trow { display: flex; align-items: center; gap: 12px; }
+.trow span { flex: 1; font-size: 14px; color: #1a1a2e; }
+.tsw { position: relative; width: 50px; height: 28px; flex-shrink: 0; }
+.tsw input { opacity: 0; width: 0; height: 0; position: absolute; }
+.tknob { position: absolute; inset: 0; background: #ccd3db; border-radius: 14px; cursor: pointer; transition: background 0.2s; }
+.tknob::before { content: ''; position: absolute; width: 22px; height: 22px; left: 3px; top: 3px; background: white; border-radius: 50%; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+.tsw input:checked + .tknob { background: #e94560; }
+.tsw input:checked + .tknob::before { transform: translateX(22px); }
+.bbar {
+  position: fixed; bottom: 0; left: 0; right: 0; background: white;
+  border-top: 1px solid #dde3ea;
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+  display: flex; gap: 10px; z-index: 200;
+}
+.bsave {
+  flex: 1; background: #e94560; color: white; border: none;
+  border-radius: 12px; padding: 14px; font-size: 15px; font-weight: 700;
+  cursor: pointer; -webkit-appearance: none;
+}
+.bexport {
+  background: #1a1a2e; color: white; border: none;
+  border-radius: 12px; padding: 14px 16px; font-size: 13px; font-weight: 600;
+  cursor: pointer; -webkit-appearance: none;
+}
+.spacer { height: 100px; }
+.toast {
+  position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%);
+  background: #1a1a2e; color: white; padding: 10px 22px; border-radius: 22px;
+  font-size: 13px; font-weight: 600; opacity: 0; transition: opacity 0.25s;
+  pointer-events: none; z-index: 300; white-space: nowrap;
+}
+.toast.on { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="hdr">
+  <h1>TRAININGSDOKU · BL ERFURT</h1>
+  <p class="sub">Sommer 2026 · Phase 1 · 04.05 – 14.06</p>
+  <div class="tabs-wrap"><div class="tabs" id="tabs"></div></div>
+</div>
+<div class="wnav">
+  <button class="arr" onclick="chWeek(-1)">‹</button>
+  <span class="wlbl" id="wlbl"></span>
+  <button class="arr" onclick="chWeek(1)">›</button>
+</div>
+<div class="days" id="days"></div>
+<div id="noteBanner"></div>
+<div id="form"></div>
+<div class="spacer"></div>
+<div class="bbar">
+  <button class="bsave" id="btnSave" onclick="doSave()">Eintrag speichern</button>
+  <button class="bexport" onclick="doExport()">↓ Export</button>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwrlJOIIva6uBKRky7gpbL2A6hWK7XebW1pLPHVyWGENR5-AjHAGjt5--HtSGzWkik_/exec';
+
+const PLAYERS = [
+  {name:"Musa Abra",            year:"2006", note:"U20 NM ab 12.06."},
+  {name:"Leonar Fliege",        year:"2007", note:"Knie-Untersuchung Dr. Lutz"},
+  {name:"Luca Förster",         year:"2007", note:""},
+  {name:"Bastian Rehbein",      year:"2009", note:""},
+  {name:"Oliver Jentzsch",      year:"2009", note:"Reha-Steuerung Torsten"},
+  {name:"Charlie Pappas",       year:"2009", note:"Knie-Untersuchung Dr. Lutz"},
+  {name:"Jasper Brand",         year:"2005", note:""},
+  {name:"Jeremie Fotso Sighom", year:"2008", note:""},
+  {name:"Luke Kiraly",          year:"2007", note:""},
+  {name:"Friedrich Radefeld",   year:"2004", note:""},
+  {name:"Tobias Bode",          year:"1992", note:""},
+  {name:"Lenny Dittmar",        year:"2007", note:""},
+  {name:"Piet Peters",          year:"2010", note:"Skoliose/Hautkrankheit/Handplatte klären"},
+  {name:"Ilja Friesen",         year:"2010", note:""},
+  {name:"Linus Kolarzik",       year:"2010", note:""},
+  {name:"Robin Richter",        year:"2010", note:""},
+  {name:"Magnus Bauschke",      year:"2009", note:""},
+  {name:"Lasse Kiraly",         year:"2009", note:"Morbus Schlatter – Knie Dr. Lutz"},
+  {name:"Testspieler",          year:"----", note:"Testprofil – kann jederzeit gelöscht werden"},
+];
+
+const DAYS = ["Mo","Di","Mi","Do","Fr","Sa","So"];
+const START = new Date(2026,4,4);
+let cP=0, cW=0, cD=0;
+const store = {};
+
+function key(p,w,d){ return p+'_'+w+'_'+d; }
+function load(p,w,d){ return store[key(p,w,d)]||null; }
+function saveMem(p,w,d,v){ store[key(p,w,d)]=v; }
+
+function dateFor(w,d){ const t=new Date(START); t.setDate(t.getDate()+w*7+d); return t; }
+function fmt(dt){ return dt.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'}); }
+function fmtFull(dt){ return dt.toLocaleDateString('de-DE',{weekday:'long',day:'2-digit',month:'long'}); }
+
+function renderTabs(){
+  const el=document.getElementById('tabs'); el.innerHTML='';
+  PLAYERS.forEach((p,i)=>{
+    const parts=p.name.split(' ');
+    const lbl=parts[0][0]+'. '+parts[parts.length-1].slice(0,8);
+    const b=document.createElement('button');
+    b.className='tab'+(i===cP?' on':'');
+    b.textContent=lbl;
+    b.onclick=()=>{cP=i;cD=0;render();};
+    el.appendChild(b);
+  });
+}
+
+function renderWeek(){
+  document.getElementById('wlbl').textContent='KW '+(cW+1)+'/6 · '+fmt(dateFor(cW,0))+'–'+fmt(dateFor(cW,6));
+}
+
+function chWeek(d){ cW=Math.max(0,Math.min(5,cW+d)); cD=0; render(); }
+
+function renderDays(){
+  const el=document.getElementById('days'); el.innerHTML='';
+  for(let d=0;d<7;d++){
+    const dt=dateFor(cW,d);
+    const b=document.createElement('button');
+    let cls='dpill';
+    if(d===cD) cls+=' on';
+    else if(load(cP,cW,d)) cls+=' saved';
+    b.className=cls;
+    b.innerHTML='<span class="dn">'+DAYS[d]+'</span><span class="dd">'+dt.getDate()+'</span>';
+    b.onclick=(function(day){return function(){cD=day;render();};})(d);
+    el.appendChild(b);
+  }
+}
+
+function renderNote(){
+  const n=PLAYERS[cP].note;
+  document.getElementById('noteBanner').innerHTML=n?'<div class="note">⚠ '+n+'</div>':'';
+}
+
+function scaleF(lbl,fk,e){
+  const v=e?(e[fk]!==undefined?e[fk]:null):null;
+  let h='<div class="fld"><label>'+lbl+'</label><div class="scale">';
+  for(let i=0;i<=10;i++) h+='<button class="sbtn'+(v===i?' on':'')+'" onclick="pickS(\''+fk+'\','+i+',this)">'+i+'</button>';
+  return h+'</div></div>';
+}
+function pickS(fk,val,btn){
+  btn.closest('.scale').querySelectorAll('.sbtn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+function txtF(lbl,fk,e,ph,multi){
+  const v=e?(e[fk]||''):'';
+  if(multi) return '<div class="fld"><label>'+lbl+'</label><textarea id="f_'+fk+'" placeholder="'+ph+'">'+v+'</textarea></div>';
+  return '<div class="fld"><label>'+lbl+'</label><input type="text" id="f_'+fk+'" value="'+v+'" placeholder="'+ph+'"></div>';
+}
+function numF(lbl,fk,e,unit,ph){
+  const v=e?(e[fk]||''):'';
+  return '<div class="fld"><label>'+lbl+'</label><div class="num-row"><input type="number" id="f_'+fk+'" value="'+v+'" placeholder="'+ph+'"><span class="num-unit">'+unit+'</span></div></div>';
+}
+function togF(lbl,fk,e){
+  const v=e?(e[fk]||false):false;
+  return '<div class="fld"><div class="trow"><span>'+lbl+'</span><label class="tsw"><input type="checkbox" id="f_'+fk+'" '+(v?'checked':'')+'><span class="tknob"></span></label></div></div>';
+}
+function sec(title,color,body,id){
+  return '<div class="sec" id="s_'+id+'"><button class="sec-hdr" style="background:'+color+'" onclick="togS(\''+id+'\')"><span>'+title+'</span><span class="tog">▾</span></button><div class="sec-body">'+body+'</div></div>';
+}
+function togS(id){ document.getElementById('s_'+id).classList.toggle('closed'); }
+
+function renderForm(){
+  const e=load(cP,cW,cD);
+  let h='<div class="dlabel">'+fmtFull(dateFor(cW,cD))+'</div>';
+
+  let m='';
+  m+=scaleF('Schlafqualität (0–10)','schlaf_qual',e);
+  m+=numF('Schlafdauer','schlaf_std',e,'Std.','7.5');
+  m+=numF('Ruhepuls','ruhepuls',e,'bpm','52');
+  m+=numF('Gewicht'+(cD===0||cD===3?'':' (optional)'),'gewicht',e,'kg','');
+  m+=scaleF('Körperl. Befinden allg. (0–10)','befinden',e);
+  m+=txtF('Befinden Detail','befinden_detail',e,'z.B. Oberschenkel rechts müde',false);
+  m+=togF('Gesundheitliches Problem vorhanden','health_flag',e);
+  m+=txtF('Gesundh. Problem + Einschätzung','health_detail',e,'z.B. Achillessehne re., Schmerz 3/10',false);
+  h+=sec('MORGEN','#1a1a2e',m,'morgen');
+
+  let vm='';
+  vm+=txtF('Inhalt 1','vm_inhalt1',e,'z.B. 30 min Erwärmung',false);
+  vm+=txtF('Inhalt 2','vm_inhalt2',e,'z.B. 20 min Koordinationsleiter',false);
+  vm+=txtF('Inhalt 3','vm_inhalt3',e,'z.B. 45 min Rumpfkraft',false);
+  vm+=scaleF('Anstrengung (0–10)','vm_anstr',e);
+  vm+=txtF('Verträglichkeit','vm_vertr',e,'z.B. gut vertragen',false);
+  h+=sec('TRAINING VORMITTAG','#1b4f72',vm,'vm');
+
+  let nm='';
+  nm+=txtF('Inhalt 1','nm_inhalt1',e,'z.B. 60 min Ballhandling',false);
+  nm+=txtF('Inhalt 2','nm_inhalt2',e,'z.B. Kraft Plan 1 – Schwerpunkt Beine',false);
+  nm+=txtF('Inhalt 3','nm_inhalt3',e,'z.B. 6 min Grundlagenausdauer',false);
+  nm+=scaleF('Anstrengung (0–10)','nm_anstr',e);
+  nm+=txtF('Verträglichkeit','nm_vertr',e,'z.B. Intensität 3, gut vertragen',false);
+  h+=sec('TRAINING NACHMITTAG / ABEND','#1b4f72',nm,'nm');
+
+  let z='';
+  z+=txtF('Art der Belastung','zusatz_art',e,'z.B. Schule, Ausbildung',false);
+  z+=txtF('Dauer & Charakter','zusatz_dauer',e,'z.B. 90 min, viele Sprünge',false);
+  z+=txtF('Kontext / Situation','zusatz_kontext',e,'z.B. Abiturprüfung, Stress',false);
+  h+=sec('ZUSATZBELASTUNG (SCHULE / AUSBILDUNG)','#2c5f2e',z,'zusatz');
+
+  let mo='';
+  mo+=txtF('Mob.-Programm Uhrzeit','mob_zeit',e,'z.B. 07:30 + 22:00 Uhr',false);
+  mo+=numF('Dauer Mob.-Programm','mob_dauer',e,'min','30');
+  mo+=txtF('Zusatzmaßnahmen','mob_zusatz',e,'z.B. Sauna 15 min, Kalt duschen',false);
+  mo+=txtF('Physio – Inhalt','physio',e,'z.B. Tape Achillessehne, Massage Wade',false);
+  h+=sec('MOBILISATION & REGENERATION','#4a235a',mo,'mob');
+
+  let n='';
+  n+=txtF('Präparat 1 + Menge','ne_1',e,'z.B. 4g Creatin morgens',false);
+  n+=txtF('Präparat 2 + Menge','ne_2',e,'z.B. 500ml Eiweißshake nach Kraft',false);
+  n+=txtF('Weitere Präparate','ne_3',e,'z.B. Vitamin D 2000 IE, Omega-3',false);
+  h+=sec('NAHRUNGSERGÄNZUNG','#7b3f00',n,'naehr');
+
+  document.getElementById('form').innerHTML=h;
+}
+
+function collect(){
+  const obj={};
+  document.querySelectorAll('[id^="f_"]').forEach(el=>{
+    const k=el.id.slice(2);
+    obj[k]=el.type==='checkbox'?el.checked:el.value;
+  });
+  document.querySelectorAll('.sbtn.on').forEach(btn=>{
+    const m=btn.getAttribute('onclick').match(/pickS\('([^']+)'/);
+    if(m) obj[m[1]]=parseInt(btn.textContent);
+  });
+  return obj;
+}
+
+async function doSave(){
+  const vals=collect();
+  saveMem(cP,cW,cD,vals);
+  renderDays();
+  const btn=document.getElementById('btnSave');
+  btn.textContent='Wird gespeichert…'; btn.disabled=true;
+  let ok=false;
+  try {
+    const dt=dateFor(cW,cD);
+    const payload=Object.assign({},vals,{
+      spieler:PLAYERS[cP].name, jahrgang:PLAYERS[cP].year,
+      woche:cW+1, tag:DAYS[cD],
+      datum:dt.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'}),
+      timestamp:new Date().toISOString()
+    });
+    await fetch(SHEETS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    ok=true;
+  } catch(err){}
+  btn.textContent='Eintrag speichern'; btn.disabled=false;
+  toast(ok?'Gespeichert & synchronisiert ✓':'Lokal gespeichert – kein Internet?');
+}
+
+function doExport(){
+  const hdr='Spieler;Woche;Tag;Datum;Schlaf Qual;Schlaf Std;Ruhepuls;Gewicht;Befinden;Befinden Detail;Health Flag;Health Detail;VM1;VM2;VM3;VM Anstr;VM Vertr;NM1;NM2;NM3;NM Anstr;NM Vertr;Zusatz Art;Zusatz Dauer;Zusatz Kontext;Mob Zeit;Mob Dauer;Mob Zusatz;Physio;NE1;NE2;NE3\n';
+  let csv=hdr;
+  PLAYERS.forEach((p,pi)=>{
+    for(let w=0;w<6;w++) for(let d=0;d<7;d++){
+      const e=load(pi,w,d); if(!e) continue;
+      const dt=dateFor(w,d);
+      const r=[
+        p.name,w+1,DAYS[d],fmt(dt),
+        e.schlaf_qual!==undefined?e.schlaf_qual:'',e.schlaf_std||'',e.ruhepuls||'',e.gewicht||'',
+        e.befinden!==undefined?e.befinden:'',e.befinden_detail||'',e.health_flag?'ja':'nein',e.health_detail||'',
+        e.vm_inhalt1||'',e.vm_inhalt2||'',e.vm_inhalt3||'',e.vm_anstr!==undefined?e.vm_anstr:'',e.vm_vertr||'',
+        e.nm_inhalt1||'',e.nm_inhalt2||'',e.nm_inhalt3||'',e.nm_anstr!==undefined?e.nm_anstr:'',e.nm_vertr||'',
+        e.zusatz_art||'',e.zusatz_dauer||'',e.zusatz_kontext||'',
+        e.mob_zeit||'',e.mob_dauer||'',e.mob_zusatz||'',e.physio||'',
+        e.ne_1||'',e.ne_2||'',e.ne_3||''
+      ].map(v=>'"'+String(v).replace(/"/g,'""')+'"');
+      csv+=r.join(';')+'\n';
+    }
+  });
+  const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download='BL_Trainingsdoku_Export.csv'; a.click();
+  toast('CSV exportiert ✓');
+}
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('on');
+  setTimeout(()=>t.classList.remove('on'),2500);
+}
+
+function render(){ renderTabs(); renderWeek(); renderDays(); renderNote(); renderForm(); }
+render();
+</script>
+</body>
+</html>
